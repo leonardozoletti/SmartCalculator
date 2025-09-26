@@ -1,0 +1,223 @@
+<index.html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Energia com Gráficos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <!-- Calculadora -->
+    <div class="bg-white shadow rounded-2xl p-6">
+      <h1 class="text-xl font-bold mb-4">💡 Calculadora de Consumo de Energia</h1>
+      
+      <div id="equipamentos" class="space-y-4"></div>
+      <button onclick="addEquipamento()" class="bg-blue-500 text-white px-4 py-2 rounded-xl mt-2">+ Adicionar Equipamento</button>
+      
+      <div class="mt-6">
+        <button onclick="calcular()" class="bg-green-500 text-white px-4 py-2 rounded-xl">Calcular Consumo</button>
+      </div>
+
+      <div id="resultado" class="mt-6 p-4 bg-gray-50 rounded-xl hidden"></div>
+
+      <!-- Gráfico -->
+      <canvas id="graficoConsumo" class="mt-6"></canvas>
+    </div>
+
+    <!-- Sugestão -->
+    <div class="bg-white shadow rounded-2xl p-6">
+      <h2 class="text-xl font-bold mb-4">🎯 Sugestão de Economia</h2>
+      <label class="block mb-2">Quanto deseja economizar (R$)?</label>
+      <input id="metaEconomia" type="number" class="w-full border p-2 rounded-lg mb-4" placeholder="Ex: 50">
+
+      <label class="block mb-2">Modo de sugestão:</label>
+      <select id="modoSugestao" class="w-full border p-2 rounded-lg mb-4" onchange="toggleModo()">
+        <option value="unico">Reduzir apenas um equipamento</option>
+        <option value="dividirTodos">Dividir economia entre todos os equipamentos</option>
+        <option value="dividirSelecionados">Dividir economia entre equipamentos selecionados</option>
+      </select>
+
+      <div id="opcaoUnico" class="hidden">
+        <label class="block mb-2">Escolha o equipamento para reduzir:</label>
+        <select id="equipamentoReducao" class="w-full border p-2 rounded-lg mb-4"></select>
+      </div>
+
+      <div id="opcaoSelecionados" class="hidden">
+        <label class="block mb-2">Selecione os equipamentos para dividir:</label>
+        <div id="checkboxEquipamentos" class="space-y-2 mb-4"></div>
+      </div>
+
+      <button onclick="sugerirEconomia()" class="bg-purple-500 text-white px-4 py-2 rounded-xl">Sugerir Redução</button>
+
+      <div id="sugestao" class="mt-6 p-4 bg-gray-50 rounded-xl hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    const precoKwh = 0.746;
+    let equipamentos = [];
+    let chart;
+
+    function addEquipamento() {
+      const index = equipamentos.length;
+      equipamentos.push({ nome: '', potencia: 0, horas: 0 });
+
+      document.getElementById('equipamentos').insertAdjacentHTML('beforeend', `
+        <div class="flex gap-2 items-center">
+          <input type="text" placeholder="Nome" class="border p-2 rounded-lg w-1/4" id="nome-${index}">
+          <input type="number" placeholder="Potência (W)" class="border p-2 rounded-lg w-1/4" id="potencia-${index}">
+          <input type="number" placeholder="Horas/dia" class="border p-2 rounded-lg w-1/4" id="horas-${index}">
+        </div>
+      `);
+
+      atualizarDropdown();
+    }
+
+    function calcular() {
+      let consumoTotal = 0;
+      let custoTotal = 0;
+      let labels = [];
+      let dadosConsumo = [];
+
+      equipamentos.forEach((_, i) => {
+        const nome = document.getElementById(`nome-${i}`).value || `Equipamento ${i+1}`;
+        const potencia = parseFloat(document.getElementById(`potencia-${i}`).value) || 0;
+        const horas = parseFloat(document.getElementById(`horas-${i}`).value) || 0;
+
+        equipamentos[i] = { nome, potencia, horas };
+
+        const consumoDiario = (potencia / 1000) * horas;
+        const consumoMensal = consumoDiario * 30;
+        consumoTotal += consumoMensal;
+        custoTotal += consumoMensal * precoKwh;
+
+        labels.push(nome);
+        dadosConsumo.push(consumoMensal.toFixed(2));
+      });
+
+      document.getElementById('resultado').classList.remove('hidden');
+      document.getElementById('resultado').innerHTML = `
+        <p><strong>Consumo total mensal:</strong> ${consumoTotal.toFixed(2)} kWh</p>
+        <p><strong>Custo mensal:</strong> R$ ${custoTotal.toFixed(2)}</p>
+      `;
+
+      atualizarDropdown();
+      atualizarGrafico(labels, dadosConsumo);
+    }
+
+    function atualizarDropdown() {
+      const select = document.getElementById('equipamentoReducao');
+      const checkboxes = document.getElementById('checkboxEquipamentos');
+      if (select) select.innerHTML = '';
+      if (checkboxes) checkboxes.innerHTML = '';
+
+      equipamentos.forEach((eq, i) => {
+        const nome = document.getElementById(`nome-${i}`)?.value || `Equipamento ${i+1}`;
+        if (select) select.insertAdjacentHTML('beforeend', `<option value="${i}">${nome}</option>`);
+        if (checkboxes) {
+          checkboxes.insertAdjacentHTML('beforeend', `
+            <label class="flex items-center gap-2">
+              <input type="checkbox" value="${i}" class="chkEquip border rounded"> ${nome}
+            </label>
+          `);
+        }
+      });
+    }
+
+    function toggleModo() {
+      const modo = document.getElementById('modoSugestao').value;
+      document.getElementById('opcaoUnico').classList.add('hidden');
+      document.getElementById('opcaoSelecionados').classList.add('hidden');
+
+      if (modo === 'unico') document.getElementById('opcaoUnico').classList.remove('hidden');
+      else if (modo === 'dividirSelecionados') document.getElementById('opcaoSelecionados').classList.remove('hidden');
+    }
+
+    function sugerirEconomia() {
+      const meta = parseFloat(document.getElementById('metaEconomia').value) || 0;
+      if (meta <= 0) return;
+
+      const economiaKwh = meta / precoKwh;
+      const modo = document.getElementById('modoSugestao').value;
+      let sugestaoHtml = '';
+
+      if (modo === 'unico') {
+        const index = parseInt(document.getElementById('equipamentoReducao').value);
+        const eq = equipamentos[index];
+
+        if (!eq || eq.potencia <= 0 || eq.horas <= 0) {
+          alert('Preencha corretamente os dados do equipamento.');
+          return;
+        }
+
+        const reducaoHoras = economiaKwh / (eq.potencia / 1000 * 30);
+        const reducaoMinutosDia = (reducaoHoras * 60).toFixed(1);
+
+        sugestaoHtml = `<p>Para economizar <strong>R$ ${meta.toFixed(2)}</strong>, reduza cerca de <strong>${reducaoMinutosDia} minutos por dia</strong> no <strong>${eq.nome}</strong>.</p>`;
+      }
+      else if (modo === 'dividirTodos') {
+        const reducaoPorEq = economiaKwh / equipamentos.length;
+        sugestaoHtml = `<p>Para economizar <strong>R$ ${meta.toFixed(2)}</strong>, divida a redução entre os equipamentos da seguinte forma:</p><ul class="list-disc ml-6 mt-2">`;
+        equipamentos.forEach(eq => {
+          if (eq.potencia > 0 && eq.horas > 0) {
+            const reducaoHoras = reducaoPorEq / (eq.potencia / 1000 * 30);
+            const reducaoMinutosDia = (reducaoHoras * 60).toFixed(1);
+            sugestaoHtml += `<li><strong>${eq.nome}:</strong> reduzir ${reducaoMinutosDia} min/dia</li>`;
+          }
+        });
+        sugestaoHtml += '</ul>';
+      }
+      else if (modo === 'dividirSelecionados') {
+        const selecionados = Array.from(document.querySelectorAll('.chkEquip:checked')).map(c => parseInt(c.value));
+        if (selecionados.length === 0) {
+          alert('Selecione ao menos um equipamento.');
+          return;
+        }
+
+        const reducaoPorEq = economiaKwh / selecionados.length;
+        sugestaoHtml = `<p>Para economizar <strong>R$ ${meta.toFixed(2)}</strong>, divida a redução entre os equipamentos selecionados da seguinte forma:</p><ul class="list-disc ml-6 mt-2">`;
+        selecionados.forEach(i => {
+          const eq = equipamentos[i];
+          if (eq.potencia > 0 && eq.horas > 0) {
+            const reducaoHoras = reducaoPorEq / (eq.potencia / 1000 * 30);
+            const reducaoMinutosDia = (reducaoHoras * 60).toFixed(1);
+            sugestaoHtml += `<li><strong>${eq.nome}:</strong> reduzir ${reducaoMinutosDia} min/dia</li>`;
+          }
+        });
+        sugestaoHtml += '</ul>';
+      }
+
+      document.getElementById('sugestao').classList.remove('hidden');
+      document.getElementById('sugestao').innerHTML = sugestaoHtml;
+    }
+
+    function atualizarGrafico(labels, dados) {
+      const ctx = document.getElementById('graficoConsumo').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Consumo Mensal (kWh)',
+            data: dados,
+            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+            borderColor: 'rgba(59, 130, 246, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
