@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculadora de Consumo de Energia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 text-white font-sans">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-20 bg-black/40 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-bold text-indigo-400 drop-shadow">
+        💡 Calculadora de Consumo de Energia
+      </h1>
+      <p class="text-gray-500 text-sm">ELETROMÁGICOS</p>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO -->
+  <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+
+    <!-- CALCULADORA -->
+    <section class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/10">
+      
+      <!-- Valor do kWh -->
+      <label class="block mb-2 font-semibold text-indigo-300">Valor do kWh (R$):</label>
+      <input id="precoKwh" type="number" step="0.01"
+             class="w-full p-3 rounded-xl border border-white/20 bg-black/40 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 mb-6"
+             placeholder="Ex: 0.75">
+
+      <!-- Legenda -->
+      <div class="grid grid-cols-5 gap-4 text-gray-300 text-xs font-medium mb-4">
+        <p>🏷️ <strong>Nome</strong></p>
+        <p>⚡ <strong>Potência (W)</strong></p>
+        <p>⏱️ <strong>Horas/dia</strong></p>
+        <p>🕒 <strong>Min/dia</strong></p>
+        <p>❌ <strong>Remover</strong></p>
+      </div>
+
+      <!-- Lista -->
+      <div id="equipamentos" class="space-y-4 mb-6"></div>
+
+      <!-- Botões -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button onclick="addEquipamento()" class="btn-action bg-indigo-500 hover:bg-indigo-600">+ Adicionar</button>
+        <button onclick="calcular()" class="btn-action bg-green-500 hover:bg-green-600">Calcular</button>
+        <button onclick="alternarGrafico()" class="btn-action bg-blue-500 hover:bg-blue-600">Alternar Gráfico</button>
+        <button onclick="alternarTipoDado()" class="btn-action bg-orange-400 hover:bg-orange-500">kWh / R$</button>
+      </div>
+
+      <!-- Resultado -->
+      <div id="resultado" class="mt-6 p-4 bg-black/50 text-gray-100 rounded-xl border border-white/10 hidden"></div>
+
+      <!-- Gráfico -->
+      <div class="mt-6 p-4 bg-black/40 rounded-xl border border-white/10">
+        <canvas id="graficoConsumo"></canvas>
+      </div>
+    </section>
+
+    <!-- SUGESTÃO -->
+    <aside class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/10">
+      <h2 class="text-2xl font-bold mb-6 text-purple-300">🎯 Sugestão de Economia</h2>
+
+      <label class="block mb-2 font-semibold text-purple-300">Meta de economia (R$):</label>
+      <input id="metaEconomia" type="number"
+             class="w-full p-3 rounded-xl border border-white/20 bg-black/40 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 mb-4"
+             placeholder="Ex: 50">
+
+      <label class="block mb-2 font-semibold text-purple-300">Modo de sugestão:</label>
+      <select id="modoSugestao"
+              class="w-full p-3 rounded-xl border border-white/20 bg-black/40 text-white focus:ring-2 focus:ring-purple-500 mb-6"
+              onchange="toggleModo()">
+        <option value="unico">Reduzir um equipamento</option>
+        <option value="dividirTodos">Dividir entre todos</option>
+        <option value="dividirSelecionados">Dividir entre selecionados</option>
+      </select>
+
+      <div id="opcaoUnico" class="hidden mb-4">
+        <label class="block mb-2 font-semibold text-purple-300">Equipamento:</label>
+        <select id="equipamentoReducao"
+                class="w-full p-3 rounded-xl border border-white/20 bg-black/40 text-white focus:ring-2 focus:ring-purple-500"></select>
+      </div>
+
+      <div id="opcaoSelecionados" class="hidden mb-4">
+        <label class="block mb-2 font-semibold text-purple-300">Selecionados:</label>
+        <div id="checkboxEquipamentos" class="space-y-2"></div>
+      </div>
+
+      <button onclick="sugerirEconomia()" class="w-full btn-action bg-purple-500 hover:bg-purple-600">Gerar Sugestão</button>
+
+      <div id="sugestao" class="mt-6 p-4 bg-black/50 text-gray-100 rounded-xl border border-white/10 hidden"></div>
+    </aside>
+  </main>
+
+  <!-- ESTILO EXTRA -->
+  <style>
+    .btn-action{
+      @apply py-3 px-4 rounded-xl font-semibold text-white shadow-md transition-all duration-300 hover:scale-105;
+    }
+  </style>
+
+  <!-- SCRIPT -->
+  <script>
+    let equipamentos = JSON.parse(localStorage.getItem('equipamentos') || '[]');
+    let chart = null;
+    let tipoGrafico = 'bar'; // 'bar' ou 'pie'
+    let tipoDado   = 'kwh';  // 'kwh' ou 'reais'
+    let dadosGrafico = { labels:[], kwh:[], reais:[] };
+
+    function salvarLocal() {
+      localStorage.setItem('equipamentos', JSON.stringify(equipamentos));
+      const preco = document.getElementById('precoKwh').value;
+      if (preco !== '') localStorage.setItem('precoKwh', preco);
+    }
+
+    function addEquipamento() {
+      equipamentos.push({ nome: '', potencia: 0, horas: 0, minutos: 0 });
+      renderEquipamentos();
+      atualizarDropdown();
+      salvarLocal();
+    }
+
+    function removerEquipamento(i) {
+      equipamentos.splice(i, 1);
+      renderEquipamentos();
+      atualizarDropdown();
+      salvarLocal();
+      calcular();
+    }
+
+    function atualizarCampo(i, campo, valor) {
+      if (!equipamentos[i]) return;
+      if (campo === 'nome') equipamentos[i][campo] = String(valor || '').trim();
+      else equipamentos[i][campo] = parseFloat(valor) || 0;
+      salvarLocal();
+    }
+
+    function renderEquipamentos() {
+      const container = document.getElementById('equipamentos');
+      container.innerHTML = '';
+      equipamentos.forEach((eq, i) => {
+        const safeName = String(eq.nome || '').replace(/"/g, '&quot;');
+        container.insertAdjacentHTML('beforeend', `
+          <div class="bg-black/40 p-3 rounded-xl border border-white/10">
+            <div class="flex gap-2 items-center">
+              <input type="text" placeholder="Nome" value="${safeName}" class="border border-white/20 bg-black/30 p-2 rounded-xl w-1/4 text-white placeholder-gray-400" oninput="atualizarCampo(${i}, 'nome', this.value)">
+              <input type="number" placeholder="Potência (W)" value="${eq.potencia || 0}" min="0" class="border border-white/20 bg-black/30 p-2 rounded-xl w-1/5 text-white placeholder-gray-400" oninput="atualizarCampo(${i}, 'potencia', this.value)">
+              <input type="number" placeholder="Horas/dia" value="${eq.horas || 0}" min="0" step="0.1" class="border border-white/20 bg-black/30 p-2 rounded-xl w-1/6 text-white placeholder-gray-400" oninput="atualizarCampo(${i}, 'horas', this.value)">
+              <input type="number" placeholder="Min/dia" value="${eq.minutos || 0}" min="0" step="1" class="border border-white/20 bg-black/30 p-2 rounded-xl w-1/6 text-white placeholder-gray-400" oninput="atualizarCampo(${i}, 'minutos', this.value)">
+              <button onclick="removerEquipamento(${i})" class="bg-red-500 hover:bg-red-600 px-3 py-2 rounded-xl shadow text-white transition-all hover:scale-105">✕</button>
+            </div>
+          </div>
+        `);
+      });
+    }
+
+    function calcular() {
+      const precoKwh = parseFloat(document.getElementById('precoKwh').value || localStorage.getItem('precoKwh')) || 0.75;
+      if (equipamentos.length === 0) {
+        const el = document.getElementById('resultado'); 
+        el.classList.remove('hidden'); 
+        el.innerHTML = 'Nenhum equipamento cadastrado'; 
+        return;
+      }
+      let consumoTotal = 0, custoTotal = 0, labels = [], dadosKwh = [], dadosReais = [];
+      equipamentos.forEach((eq,i)=>{
+        const nome = (eq.nome || `Equipamento ${i+1}`).trim();
+        const horasTotais = (parseFloat(eq.horas||0)) + (parseFloat(eq.minutos||0)/60);
+        const consumoMensal = (parseFloat(eq.potencia || 0)/1000) * horasTotais * 30;
+        const custo = consumoMensal * precoKwh;
+        consumoTotal += consumoMensal;
+        custoTotal   += custo;
+        labels.push(nome);
+        dadosKwh.push(Number(consumoMensal.toFixed(2)));
+        dadosReais.push(Number(custo.toFixed(2)));
+      });
+      const detalhamento = equipamentos.map((eq,i)=>{
+        const horasTotais = (parseFloat(eq.horas||0)) + (parseFloat(eq.minutos||0)/60);
+        const c=(parseFloat(eq.potencia || 0)/1000)*horasTotais;
+        return `<li><strong>${eq.nome || `Equipamento ${i+1}`}</strong>: ${c.toFixed(2)} kWh/dia — R$ ${(c*precoKwh).toFixed(2)} /dia</li>`;
+      }).join('');
+      document.getElementById('resultado').classList.remove('hidden');
+      document.getElementById('resultado').innerHTML = `
+        <p><strong>Consumo mensal:</strong> ${consumoTotal.toFixed(2)} kWh</p>
+        <p><strong>Custo mensal:</strong> R$ ${custoTotal.toFixed(2)}</p>
+        <p><strong>Custo anual:</strong> R$ ${(custoTotal*12).toFixed(2)}</p>
+        <details class="mt-3"><summary class="cursor-pointer text-indigo-300 hover:underline">Detalhamento (diário)</summary>
+        <ul class="list-disc ml-6 mt-2">${detalhamento}</ul></details>`;
+
+      dadosGrafico = { labels, kwh:dadosKwh, reais:dadosReais };
+      atualizarGrafico();
+      salvarLocal();
+    }
+
+    function atualizarDropdown() {
+      const sel=document.getElementById('equipamentoReducao'), chk=document.getElementById('checkboxEquipamentos'); 
+      sel.innerHTML=''; chk.innerHTML='';
+      equipamentos.forEach((eq,i)=>{ 
+        const nome=eq.nome || `Equipamento ${i+1}`;
+        sel.insertAdjacentHTML('beforeend',`<option value="${i}">${nome}</option>`);
+        chk.insertAdjacentHTML('beforeend',`<label class="flex items-center gap-2 text-gray-200"><input type="checkbox" value="${i}" class="chkEquip border rounded"> ${nome}</label>`);
+      });
+    }
+
+    function toggleModo(){
+      const modo=document.getElementById('modoSugestao').value;
+      document.getElementById('opcaoUnico').classList.add('hidden');
+      document.getElementById('opcaoSelecionados').classList.add('hidden');
+      if(modo==='unico') document.getElementById('opcaoUnico').classList.remove('hidden');
+      else if(modo==='dividirSelecionados') document.getElementById('opcaoSelecionados').classList.remove('hidden');
+    }
+
+    // >>> FUNÇÃO PARA FORMATAR TEMPO (minutos -> "X h Y min")
+    function formatarTempo(minutos) {
+      const total = Math.round(minutos);
+      if (isNaN(total)) return '0 min';
+      if (total < 60) return `${total} min`;
+      const horas = Math.floor(total / 60);
+      const mins  = total % 60;
+      if (mins === 0) return `${horas} h`;
+      return `${horas} h ${mins} min`;
+    }
+
+    function sugerirEconomia(){
+      const precoKwh = parseFloat(document.getElementById('precoKwh').value || localStorage.getItem('precoKwh')) || 0.75;
+      const meta = parseFloat(document.getElementById('metaEconomia').value) || 0;
+      if(meta <= 0){ alert('Digite um valor de meta maior que zero.'); return; }
+      if(equipamentos.length === 0){ alert('Não há equipamentos cadastrados.'); return; }
+
+      const economiaKwh = meta / precoKwh;
+      const modo = document.getElementById('modoSugestao').value;
+      let sugestaoHtml = '';
+
+      function horasTotais(eq){
+        return (parseFloat(eq.horas||0)) + (parseFloat(eq.minutos||0)/60);
+      }
+
+      if(modo === 'unico'){
+        const index = parseInt(document.getElementById('equipamentoReducao').value);
+        if(isNaN(index) || index < 0 || !equipamentos[index]){ alert('Escolha um equipamento válido.'); return; }
+        const eq = equipamentos[index];
+        if(!eq.potencia || (!eq.horas && !eq.minutos)){ alert('Preencha potência e tempo do equipamento escolhido.'); return; }
+        const reducaoHoras = economiaKwh / ((eq.potencia/1000)*30);
+        const reducaoMinutosDia = reducaoHoras * 60;
+        sugestaoHtml = `<p>Para economizar <strong>R$ ${meta.toFixed(2)}</strong>, reduza cerca de <strong>${formatarTempo(reducaoMinutosDia)}/dia</strong> no equipamento <strong>${eq.nome || `Equipamento ${index+1}`}</strong>.</p>`;
+      } else if(modo === 'dividirTodos'){
+        const validos = equipamentos.filter(e => (e.potencia || 0) > 0 && (horasTotais(e)) > 0);
+        if(validos.length === 0){ alert('Preencha potência e tempo em pelo menos um equipamento.'); return; }
+        const reducaoPorEq = economiaKwh / validos.length;
+        sugestaoHtml = `<p>Para economizar <strong>R$ ${meta.toFixed(2)}</strong>, divida a redução entre os equipamentos válidos:</p><ul class="list-disc ml-6 mt-2">`;
+        validos.forEach(eq => {
+          const reducaoHoras = reducaoPorEq / ((eq.potencia/1000)*30);
+          const reducaoMinutosDia = reducaoHoras * 60;
+          sugestaoHtml += `<li><strong>${eq.nome || 'Equipamento'}</strong>: reduzir ~${formatarTempo(reducaoMinutosDia)}/dia</li>`;
+        });
+        sugestaoHtml += '</ul>';
+      } else if(modo === 'dividirSelecionados'){
+        const selecionados = Array.from(document.querySelectorAll('.chkEquip:checked')).map(c => parseInt(c.value));
+        if(selecionados.length === 0){ alert('Selecione ao menos um equipamento.'); return; }
+        const validos = selecionados.map(i => equipamentos[i]).filter(e => (e.potencia || 0) > 0 && (horasTotais(e)) > 0);
+        if(validos.length === 0){ alert('Selecione equipamentos com potência e tempo preenchidos.'); return; }
+        const reducaoPorEq = economiaKwh / validos.length;
+        sugestaoHtml = `<p>Para economizar <strong>R$ ${meta.toFixed(2)}</strong>, divida a redução entre os equipamentos selecionados:</p><ul class="list-disc ml-6 mt-2">`;
+        validos.forEach(eq => {
+          const reducaoHoras = reducaoPorEq / ((eq.potencia/1000)*30);
+          const reducaoMinutosDia = reducaoHoras * 60;
+          sugestaoHtml += `<li><strong>${eq.nome || 'Equipamento'}</strong>: reduzir ~${formatarTempo(reducaoMinutosDia)}/dia</li>`;
+        });
+        sugestaoHtml += '</ul>';
+      }
+
+      document.getElementById('sugestao').classList.remove('hidden');
+      document.getElementById('sugestao').innerHTML = sugestaoHtml;
+    }
+
+    function atualizarGrafico(){
+      const ctx = document.getElementById('graficoConsumo').getContext('2d');
+      if(chart) chart.destroy();
+
+      const bg = ['#3B82F6','#10B981','#EAB308','#EF4444','#8B5CF6','#6366F1','#F97316','#06B6D4','#F43F5E'];
+      const labels = dadosGrafico.labels && dadosGrafico.labels.length ? dadosGrafico.labels : ['Sem dados'];
+      const datasetValores = tipoDado === 'kwh' ? dadosGrafico.kwh : dadosGrafico.reais;
+
+      // Evitar erros se arrays tiverem tamanhos diferentes
+      const safeValores = labels.map((_, i) => Number((datasetValores && datasetValores[i]) || 0));
+
+      let data;
+      if (tipoGrafico === 'bar') {
+        // Monta um dataset por equipamento (um conjunto com um único valor para cada)
+        const datasets = labels.map((label, i) => ({
+          label: label,
+          data: [safeValores[i]],
+          backgroundColor: bg[i % bg.length],
+          borderColor: 'rgba(255,255,255,0.9)',
+          borderWidth: 1
+        }));
+
+        data = {
+          labels: ['Consumo'],
+          datasets: datasets
+        };
+      } else {
+        // pie/doughnut
+        data = {
+          labels: labels,
+          datasets: [{
+            data: safeValores,
+            backgroundColor: labels.map((_, i) => bg[i % bg.length]),
+            borderColor: 'rgba(255,255,255,0.9)',
+            borderWidth: 1
+          }]
+        };
+      }
+
+      chart = new Chart(ctx, {
+        type: tipoGrafico,
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color:'#ffffff', font:{ weight:'600' } }
+            },
+            title: {
+              display: true,
+              text: tipoDado === 'kwh' ? 'Consumo (kWh/mês)' : 'Custo (R$/mês)',
+              color:'#ffffff',
+              font:{ size: 16, weight: '600' }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  // para pie, context.label existe; para bar, usar dataset.label e valor
+                  const val = Array.isArray(context.raw) ? context.raw[0] : context.raw;
+                  if (tipoDado === 'kwh') {
+                    if (tipoGrafico === 'bar') return `${context.dataset.label || ''}: ${Number(val).toFixed(2)} kWh`;
+                    return `${context.label || ''}: ${Number(val).toFixed(2)} kWh`;
+                  } else {
+                    if (tipoGrafico === 'bar') return `${context.dataset.label || ''}: R$ ${Number(val).toFixed(2)}`;
+                    return `${context.label || ''}: R$ ${Number(val).toFixed(2)}`;
+                  }
+                }
+              }
+            }
+          },
+          scales: tipoGrafico === 'bar' ? {
+            x: { ticks:{ color:'#ffffff' }, grid:{ color:'rgba(255,255,255,0.04)' } },
+            y: { ticks:{ color:'#ffffff' , callback: function(value){ return value; } }, grid:{ color:'rgba(255,255,255,0.04)' }, beginAtZero:true }
+          } : {}
+        }
+      });
+
+      // Ajuste visual da altura do canvas (para ficar legível)
+      const parent = document.getElementById('graficoConsumo').parentElement;
+      if (tipoGrafico === 'bar') parent.style.height = '320px';
+      else parent.style.height = '360px';
+    }
+
+    function alternarGrafico(){ tipoGrafico = tipoGrafico === 'bar' ? 'pie' : 'bar'; atualizarGrafico(); }
+    function alternarTipoDado(){ tipoDado = tipoDado === 'kwh' ? 'reais' : 'kwh'; atualizarGrafico(); }
+
+    window.addEventListener('load', () => {
+      const precoLocal = localStorage.getItem('precoKwh');
+      if (precoLocal) document.getElementById('precoKwh').value = precoLocal;
+      renderEquipamentos();
+      atualizarDropdown();
+      // se não houver equipamentos, adiciona um por padrão para facilitar teste
+      if (equipamentos.length === 0) {
+        // não criar automaticamente se preferir vazio — estou deixando vazio para o usuário controlar
+      } else {
+        calcular();
+      }
+      // ajuste: re-renderiza dropdown sempre que inputs mudarem (útil se o usuário editar nome)
+      // observe que atualizarCampo já salva no localStorage
+    });
+  </script>
+
+</body>
+</html>
