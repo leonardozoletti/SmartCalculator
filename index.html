@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Consumo — Início</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); }
+    .navlink:hover { color: #facc15; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-slate-100 flex flex-col">
+  
+  <!-- 🔗 Barra de navegação -->
+  <nav class="flex items-center justify-between px-6 py-4 glass border-b border-slate-700">
+    <h1 class="text-xl font-bold text-amber-400">⚡ Simulador de Consumo</h1>
+    <div class="space-x-6 text-sm">
+      <a href="index.html" class="text-amber-400 font-semibold">🏠 Início</a>
+      <a href="calculadora.html" class="navlink hover:underline">⚙️ Calculadora</a>
+      <a href="instrucoes.html" class="navlink hover:underline">📘 Instruções</a>
+     
+    </div>
+  </nav>
+
+  <!-- 🌟 Conteúdo principal -->
+  <main class="flex-1 flex flex-col items-center justify-center text-center p-6">
+    <div class="max-w-2xl">
+      <h2 class="text-4xl font-extrabold text-amber-400 mb-4">Simule o consumo da sua casa</h2>
+      <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+        Descubra quanto seus aparelhos consomem de energia por mês e veja quanto isso representa na sua conta.
+        Nosso simulador foi inspirado no modelo da Enel e criado para ser prático, bonito e educativo.
+      </p>
+
+      <!-- Botão principal -->
+      <a href="calculadora.html"
+         class="inline-block px-8 py-4 bg-amber-400 text-slate-900 font-semibold rounded-full shadow-lg hover:scale-105 transition transform">
+         🚀 Iniciar Simulação
+      </a>
+
+      <div class="mt-8 text-slate-400 text-sm">
+        <p>Ou consulte as <a href="instrucoes.html" class="text-amber-400 hover:underline">📘 instruções detalhadas</a> antes de começar.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ⚙️ Rodapé -->
+  <footer class="text-center py-4 text-slate-500 text-sm border-t border-slate-700">
+    Desenvolvido por Eletromágicos — 2025
+  </footer>
+</body>
+</html>

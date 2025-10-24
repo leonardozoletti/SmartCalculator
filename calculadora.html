@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador de Consumo — Casa inteira Avançado</title>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --bg:#0f172a;
+  --card:rgba(255,255,255,0.04);
+  --accent:#ffd866;
+}
+body{
+  background:linear-gradient(180deg,#0b1220,#0f172a);
+  color:#e6eef8;
+  font-family:Inter,system-ui,Arial,sans-serif;
+}
+.glass{background:var(--card);backdrop-filter:blur(6px);}
+.card-hover{transition:transform .2s, box-shadow .2s;}
+.card-hover:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(2,6,23,0.45);}
+input.editable{
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.2);
+  border-radius:6px;
+  padding:6px;
+  color:#071024;
+  width:100%;
+}
+input.editable:focus{outline:none;box-shadow:0 0 6px rgba(250,204,21,0.3);}
+#tarifa{
+  width:150px;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid rgba(0,0,0,0.2);
+  color:#071024;
+}
+canvas{background:rgba(255,255,255,0.02);border-radius:12px;}
+.legend-small{font-size:14px;}
+.btn-small{padding:.45rem .7rem;font-size:.875rem;}
+.table-input{background:transparent;border:0;color:inherit;padding:4px;}
+.table-input:focus{outline:none;}
+#graficoGeral,#graficoBarras{height:400px !important;}
+@media (max-width:900px){#graficoGeral,#graficoBarras{height:300px !important;}}
+.no-print{display:block;}
+@media print{.no-print{display:none !important}}
+</style>
+</head>
+<body>
+<div class="max-w-7xl mx-auto p-6">
+
+<!-- NAV -->
+<nav class="flex items-center justify-between mb-6 glass border border-slate-700 p-4 rounded">
+  <div class="flex items-center gap-3">
+    <h1 class="text-xl font-bold" style="color:var(--accent)">⚡ Simulador de Consumo</h1>
+    <span class="text-sm text-slate-300">— Casa inteira Avançado</span>
+  </div>
+  <div class="space-x-4 text-sm no-print">
+    <a href="index.html" class="hover:text-amber-400">🏠 Início</a>
+    <a href="#" class="text-amber-400 font-semibold">⚙️ Calculadora</a>
+    <a href="instrucoes.html" class="hover:text-amber-400">📘 Instruções</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<header class="flex flex-col md:flex-row items-start justify-between mb-6 gap-4">
+  <div>
+    <h2 class="text-2xl font-extrabold">Simulador de Consumo — Casa inteira</h2>
+    <p class="text-slate-300 mt-1">Selecione um cômodo, ajuste aparelhos e veja impacto em kWh e em R$.</p>
+  </div>
+  <div class="text-right no-print">
+    <div class="text-sm text-slate-300 mb-1">Tarifa (R$/kWh)</div>
+    <div class="flex items-center gap-2">
+      <input id="tarifa" type="number" step="0.001" value="0.970" />
+      <button id="imprimir" class="btn-small bg-emerald-500 text-slate-900 rounded">Imprimir / PDF</button>
+    </div>
+  </div>
+</header>
+
+<!-- ROOM SELECT -->
+<div class="mb-6 flex flex-wrap gap-2 no-print">
+  <button class="room-btn btn-small bg-slate-700 rounded" data-room="Sala">Sala</button>
+  <button class="room-btn btn-small bg-slate-700 rounded" data-room="Quarto">Quarto</button>
+  <button class="room-btn btn-small bg-slate-700 rounded" data-room="Cozinha">Cozinha</button>
+  <button class="room-btn btn-small bg-slate-700 rounded" data-room="Banheiro">Banheiro</button>
+  <button class="room-btn btn-small bg-slate-700 rounded" data-room="Lavanderia">Lavanderia</button>
+</div>
+
+<!-- PRESETS + SUMMARY -->
+<section class="grid md:grid-cols-2 gap-4 mb-6">
+  <div class="p-4 glass rounded card-hover">
+    <h3 id="roomTitle" class="font-semibold text-amber-400">Sala</h3>
+    <p class="text-sm text-slate-300">Aparelhos pré-definidos — clique em <em>Importar</em> para adicionar.</p>
+    <div id="presetsList" class="mt-3 space-y-2"></div>
+    <div class="mt-4 flex gap-2 flex-wrap">
+      <button id="btnAddManual" class="btn-small bg-indigo-500 rounded">Adicionar manual</button>
+      <button id="btnClearRoom" class="btn-small bg-rose-600 rounded">Limpar</button>
+      <button id="btnSaveRoom" class="btn-small bg-slate-700 rounded">Salvar</button>
+    </div>
+  </div>
+
+  <div class="p-4 glass rounded card-hover">
+    <h4 class="font-semibold">Resumo do ambiente</h4>
+    <div class="mt-3 space-y-2 text-sm">
+      <div class="flex justify-between"><span>Consumo total</span><strong id="consumoTotal">0,00 kWh</strong></div>
+      <div class="flex justify-between"><span>Custo estimado</span><strong id="custoTotal">R$ 0,00</strong></div>
+      <div class="flex justify-between"><span>Aparelhos</span><strong id="qtdAparelhos">0</strong></div>
+      <div class="flex justify-between"><span>Horas médias/dia</span><strong id="horasMedia">0</strong></div>
+    </div>
+    <div class="mt-4 text-slate-300 text-xs">Dados salvos localmente no navegador.</div>
+  </div>
+</section>
+
+<!-- Tabela atualizada com coluna Minutos/dia -->
+<table id="tableAparelhos" class="min-w-full text-sm mt-2">
+<thead class="text-slate-300/80 text-left text-xs uppercase">
+<tr>
+<th class="pb-2">Nome</th>
+<th class="pb-2">Potência (W)</th>
+<th class="pb-2">Qtd</th>
+<th class="pb-2">Horas/dia</th>
+<th class="pb-2">Minutos/dia</th>
+<th class="pb-2">kWh/mês</th>
+<th class="pb-2">Ações</th>
+</tr>
+</thead>
+<tbody id="tbody" class="align-top text-slate-900/90"></tbody>
+</table>
+<div class="mt-4 flex flex-wrap items-center gap-3">
+  <button id="btnCalcular" class="btn-small bg-amber-500 text-slate-900 rounded">Calcular</button>
+  <button id="btnExportCsv" class="btn-small bg-slate-700 rounded">Exportar CSV</button>
+  <button id="btnResetHours" class="btn-small bg-slate-700 rounded">Zerar horas</button>
+  <button id="btnToggleGraph" class="btn-small bg-emerald-600 rounded">Modo: kWh</button>
+</div>
+</section>
+
+<!-- CHARTS -->
+<section class="p-4 glass rounded card-hover mb-8 grid md:grid-cols-2 gap-4">
+<div>
+  <h4 id="chartTitle" class="font-semibold text-amber-400">Gráfico de Pizza (kWh/mês)</h4>
+  <canvas id="graficoGeral"></canvas>
+</div>
+<div>
+  <h4 id="chartBarTitle" class="font-semibold text-amber-400">Gráfico de Barras (kWh/mês)</h4>
+  <canvas id="graficoBarras"></canvas>
+</div>
+</section>
+
+<footer class="text-sm text-slate-400 no-print">Feito por Eletromágicos — 2025</footer>
+
+<!-- TEMPLATE ROW -->
+<template id="rowTemplate">
+<tr class="border-t border-slate-700/30">
+<td class="py-2"><input class="nome table-input editable" /></td>
+<td class="py-2"><input class="potencia table-input editable" type="number" step="1" /></td>
+<td class="py-2"><input class="qtd table-input editable" type="number" step="1" /></td>
+<td class="py-2"><input class="horas table-input editable" type="number" step="0.1" /></td>
+<td class="py-2"><span class="kwh">0,00</span></td>
+<td class="py-2">
+  <div class="flex gap-2">
+    <button class="remover btn-small bg-rose-600 rounded">Remover</button>
+  </div>
+</td>
+</tr>
+</template>
+
+<script>
+/* -------------------- PRESETS -------------------- */
+const PRESETS = {
+'Sala': [
+{name:'TV LED 55"', w:120, h:4, q:1},
+{name:'Ar-condicionado 12k BTU', w:1000, h:2, q:1},
+{name:'Ventilador', w:60, h:3, q:1},
+{name:'Soundbar', w:40, h:1.5, q:1},
+{name:'Lâmpada LED 12W', w:12, h:5, q:4}
+],
+'Quarto': [
+{name:'Lâmpada LED', w:12, h:4, q:2},
+{name:'Ventilador', w:60, h:8, q:1},
+{name:'TV 32"', w:80, h:1.5, q:1},
+{name:'Carregador (celular)', w:10, h:2, q:1},
+{name:'Computador desktop', w:300, h:6, q:1},
+{name:'Monitor', w:40, h:6, q:1},
+{name:'Impressora', w:100, h:0.5, q:1},
+],
+'Cozinha': [
+{name:'Geladeira (média)', w:200, h:24, q:1},
+{name:'Micro-ondas', w:1000, h:0.2, q:1},
+{name:'Forno elétrico', w:1500, h:0.5, q:1},
+{name:'Cooktop', w:2000, h:0.5, q:1},
+{name:'Lâmpada LED', w:12, h:4, q:2}
+],
+'Banheiro': [
+{name:'Chuveiro (elétrico)', w:5500, h:0.2, q:1},
+{name:'Secador de cabelo', w:1200, h:0.05, q:1},
+{name:'Lâmpada LED', w:12, h:1, q:1}
+],
+'Lavanderia': [
+{name:'Máquina de lavar', w:500, h:1, q:1},
+{name:'Secadora', w:2000, h:0.5, q:1},
+{name:'Ferro de passar', w:1200, h:0.2, q:1}
+]
+};
+
+/* -------------------- DOM -------------------- */
+const roomBtns = document.querySelectorAll('.room-btn');
+const roomTitle = document.getElementById('roomTitle');
+const roomSubtitle = document.getElementById('roomSubtitle');
+const presetsList = document.getElementById('presetsList');
+const tbody = document.getElementById('tbody');
+const rowTemplate = document.getElementById('rowTemplate');
+const tarifaInput = document.getElementById('tarifa');
+const consumoTotalEl = document.getElementById('consumoTotal');
+const custoTotalEl = document.getElementById('custoTotal');
+const qtdAparelhosEl = document.getElementById('qtdAparelhos');
+const horasMediaEl = document.getElementById('horasMedia');
+const btnAddManual = document.getElementById('btnAddManual');
+const btnClearRoom = document.getElementById('btnClearRoom');
+const btnSaveRoom = document.getElementById('btnSaveRoom');
+const btnCalcular = document.getElementById('btnCalcular');
+const btnExportCsv = document.getElementById('btnExportCsv');
+const btnResetHours = document.getElementById('btnResetHours');
+const btnToggleGraph = document.getElementById('btnToggleGraph');
+const imprimirBtn = document.getElementById('imprimir');
+const chartTitleEl = document.getElementById('chartTitle');
+const chartBarTitleEl = document.getElementById('chartBarTitle');
+const graficoCanvas = document.getElementById('graficoGeral');
+const graficoBarrasCanvas = document.getElementById('graficoBarras');
+
+/* -------------------- State -------------------- */
+let currentRoom = localStorage.getItem('sim_selectedRoom') || 'Sala';
+let graphMode = localStorage.getItem('sim_graphMode') || 'kwh'; // kwh/reais
+let chartInstance=null;
+let chartBarInstance=null;
+
+/* -------------------- Helpers -------------------- */
+const money=v=>Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function formatNumberBR(x){return Number(x).toFixed(2).replace('.',',');}
+
+/* -------------------- Rows -------------------- */
+function addRow(name='',potencia=60,qtd=1,horas=1){
+const frag=rowTemplate.content.cloneNode(true);
+const tr=frag.querySelector('tr');
+tr.querySelector('.nome').value=name;
+tr.querySelector('.potencia').value=potencia;
+tr.querySelector('.qtd').value=qtd;
+tr.querySelector('.horas').value=horas;
+tr.querySelector('.kwh').textContent=calcKwhForInputs(tr);
+tr.querySelector('.remover').addEventListener('click',()=>{tr.remove();updateAll();});
+['nome','potencia','qtd','horas'].forEach(cls=>{
+  tr.querySelector('.'+cls).addEventListener('input',()=>{tr.querySelector('.kwh').textContent=calcKwhForInputs(tr);updateAll();});
+});
+tbody.appendChild(tr);
+updateAll();
+}
+
+function calcKwhForInputs(tr){
+const pot=Number(tr.querySelector('.potencia').value||0);
+const qtd=Number(tr.querySelector('.qtd').value||0);
+const horas=Number(tr.querySelector('.horas').value||0);
+return formatNumberBR((pot*horas*30*qtd)/1000);
+}
+
+function gatherRows(){
+const rows=[];
+tbody.querySelectorAll('tr').forEach(tr=>{
+  const nome=tr.querySelector('.nome').value||'—';
+  const potencia=Number(tr.querySelector('.potencia').value||0);
+  const qtd=Number(tr.querySelector('.qtd').value||0);
+  const horas=Number(tr.querySelector('.horas').value||0);
+  const kwh=(potencia*horas*30*qtd)/1000;
+  rows.push({nome,potencia,qtd,horas,kwh});
+});
+return rows;
+}
+
+/* -------------------- Persistence -------------------- */
+function saveRoom(room){
+const all=JSON.parse(localStorage.getItem('sim_rooms')||'{}');
+all[room]=gatherRows();
+localStorage.setItem('sim_rooms',JSON.stringify(all));
+}
+function loadRoom(room){
+const all=JSON.parse(localStorage.getItem('sim_rooms')||'{}');
+return all[room]||null;
+}
+
+/* -------------------- Presets -------------------- */
+function renderPresets(room){
+presetsList.innerHTML='';
+(PRESETS[room]||[]).forEach(p=>{
+  const div=document.createElement('div');
+  div.className='flex items-center justify-between text-sm text-slate-300';
+  div.innerHTML=`<span>${p.name} — ${p.w}W</span><button class="btn-small bg-slate-700 rounded import-preset">Importar</button>`;
+  presetsList.appendChild(div);
+  div.querySelector('.import-preset').addEventListener('click',()=>addRow(p.name,p.w,p.q||1,p.h||1));
+});
+}
+
+/* -------------------- Room switching -------------------- */
+function switchRoom(room){
+saveRoom(currentRoom);
+currentRoom=room;
+localStorage.setItem('sim_selectedRoom',currentRoom);
+roomBtns.forEach(b=>{b.classList.remove('bg-amber-400','text-slate-900');if(b.dataset.room===room)b.classList.add('bg-amber-400','text-slate-900');});
+roomTitle.textContent=room;
+roomSubtitle.textContent=room;
+renderPresets(room);
+tbody.innerHTML='';
+const saved=loadRoom(room);
+if(saved&&saved.length)saved.forEach(r=>addRow(r.nome,r.potencia,r.qtd,r.horas));
+else(PRESETS[room]||[]).forEach(d=>addRow(d.name,d.w,d.q||1,d.h||1));
+updateAll();
+}
+
+/* -------------------- Summary & Charts -------------------- */
+function updateSummary(){
+const rows=gatherRows();
+const totalKwh=rows.reduce((s,r)=>s+r.kwh,0);
+const tarifa=Number(tarifaInput.value||0);
+const totalReais=totalKwh*tarifa;
+const mediaHoras=(rows.length?rows.reduce((s,r)=>s+r.horas,0)/rows.length:0).toFixed(1);
+consumoTotalEl.textContent=totalKwh.toFixed(2).replace('.',',')+' kWh';
+custoTotalEl.textContent=money(totalReais);
+qtdAparelhosEl.textContent=rows.length;
+horasMediaEl.textContent=mediaHoras;
+saveRoom(currentRoom);
+}
+
+function updateCharts(){
+const rows=gatherRows();
+const labels=rows.map(r=>r.nome);
+const tarifa=Number(tarifaInput.value||0);
+const data=rows.map(r=>graphMode==='kwh'?Number(r.kwh.toFixed(2)):Number((r.kwh*tarifa).toFixed(2)));
+
+/* Pie chart */
+chartTitleEl.textContent=graphMode==='kwh'?'Gráfico de Pizza (kWh/mês)':'Gráfico de Pizza (R$/mês)';
+btnToggleGraph.textContent=graphMode==='kwh'?'Modo: kWh':'Modo: R$';
+if(chartInstance){chartInstance.destroy();chartInstance=null;}
+if(labels.length){
+chartInstance=new Chart(graficoCanvas.getContext('2d'),{
+type:'pie',
+data:{labels,datasets:[{data,backgroundColor:labels.map((_,i)=>`hsl(${(i*50)%360} 70% 50%)`),borderColor:'#0b1220',borderWidth:1}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:14,padding:8,font:{size:13}}},tooltip:{callbacks:{label:function(c){const val=c.parsed;if(graphMode==='kwh')return`${c.label}: ${Number(val).toFixed(2).replace('.',',')} kWh`;return`${c.label}: ${money(val)}`;}}}}}
+});
+}else{const ctx=graficoCanvas.getContext('2d');ctx.clearRect(0,0,graficoCanvas.width,graficoCanvas.height);}
+
+/* Bar chart */
+chartBarTitleEl.textContent=graphMode==='kwh'?'Gráfico de Barras (kWh/mês)':'Gráfico de Barras (R$/mês)';
+if(chartBarInstance){chartBarInstance.destroy();chartBarInstance=null;}
+if(labels.length){
+chartBarInstance=new Chart(graficoBarrasCanvas.getContext('2d'),{
+type:'bar',
+data:{labels,datasets:[{label:graphMode==='kwh'?'kWh':'R$',data,backgroundColor:labels.map((_,i)=>`hsl(${(i*50)%360} 70% 50%)`)}]},
+options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+});
+}else{const ctx=graficoBarrasCanvas.getContext('2d');ctx.clearRect(0,0,graficoBarrasCanvas.width,graficoBarrasCanvas.height);}
+}
+
+/* -------------------- CSV -------------------- */
+function exportCSV(){
+const rows=gatherRows();
+if(!rows.length){alert('Nenhum aparelho para exportar.');return;}
+let csv='Nome;Potencia(W);Qtd;HorasDia;kWhMes\n';
+rows.forEach(r=>csv+=`${r.nome};${r.potencia};${r.qtd};${r.horas};${r.kwh.toFixed(2)}\n`);
+const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download=`simulador_${currentRoom}.csv`;a.click();
+URL.revokeObjectURL(url);
+}
+
+/* -------------------- Utilities -------------------- */
+function updateAll(){tbody.querySelectorAll('tr').forEach(tr=>tr.querySelector('.kwh').textContent=calcKwhForInputs(tr));updateSummary();updateCharts();}
+
+/* -------------------- Events -------------------- */
+roomBtns.forEach(b=>b.addEventListener('click',()=>switchRoom(b.dataset.room)));
+btnAddManual.addEventListener('click',()=>addRow('',60,1,1));
+btnClearRoom.addEventListener('click',()=>{if(confirm('Limpar todos os aparelhos neste ambiente?')){tbody.innerHTML='';updateAll();}});
+btnSaveRoom.addEventListener('click',()=>{saveRoom(currentRoom);alert('Ambiente salvo localmente.');});
+btnCalcular.addEventListener('click',updateAll);
+btnExportCsv.addEventListener('click',exportCSV);
+btnResetHours.addEventListener('click',()=>{tbody.querySelectorAll('tr').forEach(tr=>tr.querySelector('.horas').value=0);updateAll();});
+imprimirBtn.addEventListener('click',()=>window.print());
+tarifaInput.addEventListener('input',updateAll);
+btnToggleGraph.addEventListener('click',()=>{graphMode=(graphMode==='kwh'?'reais':'kwh');localStorage.setItem('sim_graphMode',graphMode);updateCharts();});
+
+/* -------------------- INIT -------------------- */
+(function init(){
+roomBtns.forEach(b=>{if(b.dataset.room===currentRoom)b.classList.add('bg-amber-400','text-slate-900');});
+renderPresets(currentRoom);
+tbody.innerHTML='';
+const saved=loadRoom(currentRoom);
+if(saved&&saved.length)saved.forEach(r=>addRow(r.nome,r.potencia,r.qtd,r.horas));
+else(PRESETS[currentRoom]||[]).forEach(d=>addRow(d.name,d.w,d.q||1,d.h||1));
+if(graphMode!=='kwh'&&graphMode!=='reais')graphMode='kwh';
+btnToggleGraph.textContent=(graphMode==='kwh')?'Modo: kWh':'Modo: R$';
+updateAll();
+})();
+</script>
+</div>
+</body>
+</html>

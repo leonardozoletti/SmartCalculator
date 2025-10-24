@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instruções — Simulador de Consumo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); }
+    .navlink:hover { color: #facc15; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+  
+  <!-- 🔗 Barra de navegação -->
+  <nav class="flex items-center justify-between px-6 py-4 glass border-b border-slate-700">
+    <h1 class="text-xl font-bold text-amber-400">⚡ Simulador de Consumo</h1>
+    <div class="space-x-6 text-sm">
+      <a href="index.html" class="navlink hover:underline">🏠 Início</a>
+      <a href="calculadora.html" class="navlink hover:underline">⚙️ Calculadora</a>
+      <a href="instrucoes.html" class="text-amber-400 font-semibold">📘 Instruções</a>
+    </div>
+  </nav>
+
+  <!-- 🧭 Conteúdo principal -->
+  <main class="max-w-4xl mx-auto p-8 space-y-8">
+    
+    <!-- Introdução -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h2 class="text-2xl font-semibold mb-2 text-amber-400">📖 Bem-vindo às Instruções</h2>
+      <p class="text-slate-300 leading-relaxed">
+        Aqui você aprenderá a usar o simulador de consumo de energia de forma prática e eficiente.
+        Este guia foi feito para te ajudar a entender como estimar o gasto mensal dos aparelhos da sua casa,
+        com base no tempo de uso e potência de cada um.
+      </p>
+    </section>
+
+    <!-- Como usar -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold text-amber-400 mb-2">🧮 1. Como usar o simulador</h3>
+      <ul class="list-disc list-inside text-slate-300 space-y-2">
+        <li>Acesse a aba <strong>Calculadora</strong> no menu acima.</li>
+        <li>Selecione os aparelhos pré-definidos da sala ou adicione novos manualmente.</li>
+        <li>Informe a potência (em watts), quantidade e horas de uso diário.</li>
+        <li>O sistema calculará automaticamente o consumo mensal em kWh e o custo total.</li>
+        <li>Você pode alterar a tarifa de energia conforme a taxa da sua distribuidora.</li>
+      </ul>
+    </section>
+
+    <!-- Como gerar o PDF -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+<h3 class="text-xl font-semibold text-amber-400 mb-2">📈 2. Como gerar o relatório em PDF</h3>
+      <p class="text-slate-300 mb-3">
+        Após inserir os dados na calculadora, clicar em <strong>Imprimir/PDF</strong>.
+        Lá você poderá baixar um relatório detalhado contendo:
+      </p>
+      <ul class="list-disc list-inside text-slate-300 space-y-2">
+        <li>Lista completa de aparelhos e consumo individual.</li>
+        <li>Resumo total de kWh e custo mensal.</li>
+        <li>Gráfico de distribuição de consumo (opcional).</li>
+        <li>Data e hora da simulação.</li>
+      </ul>
+    </section>
+
+    <!-- Dicas -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-xl font-semibold text-amber-400 mb-2">💡 3. Dicas de economia de energia</h3>
+      <ul class="list-disc list-inside text-slate-300 space-y-2">
+        <li>Desligue aparelhos da tomada quando não estiverem em uso.</li>
+        <li>Prefira lâmpadas LED, elas consomem até 80% menos energia.</li>
+        <li>Mantenha o ar-condicionado em temperatura moderada (23 °C – 25 °C).</li>
+        <li>Utilize o modo “Eco” em equipamentos modernos.</li>
+        <li>Evite deixar a TV ligada apenas como som ambiente.</li>
+      </ul>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="text-center text-slate-400 text-sm mt-10">
+      Desenvolvido por Eletromágicos — 2025
+    </footer>
+  </main>
+
+</body>
+</html>
