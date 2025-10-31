@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Consumo — Início</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+    
+    * {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    
+    body {
+      overflow-x: hidden;
+    }
+    
+    .glass { 
+      background: rgba(255,255,255,0.06); 
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .navlink {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    
+    .navlink::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #facc15;
+      transition: width 0.3s ease;
+    }
+    
+    .navlink:hover::after {
+      width: 100%;
+    }
+    
+    .navlink:hover { 
+      color: #facc15; 
+    }
+    
+    /* Animated gradient background */
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1e1b4b 75%, #0f172a 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(250, 204, 21, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float 20s infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(50px) scale(0);
+        opacity: 0;
+      }
+    }
+    
+    /* Hero title animation */
+    .hero-title {
+      background: linear-gradient(135deg, #fbbf24 0%, #facc15 50%, #fcd34d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s ease-in-out infinite;
+      background-size: 200% auto;
+    }
+    
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+    }
+    
+    /* Glow effect */
+    .glow {
+      box-shadow: 0 0 40px rgba(250, 204, 21, 0.3);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 40px rgba(250, 204, 21, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 60px rgba(250, 204, 21, 0.5);
+      }
+    }
+    
+    /* Button hover effect */
+    .btn-hero {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    
+    .btn-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .btn-hero:hover::before {
+      left: 100%;
+    }
+    
+    .btn-hero:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 20px 40px rgba(250, 204, 21, 0.4);
+    }
+    
+    /* Feature cards */
+    .feature-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(250, 204, 21, 0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.5));
+      animation: float-icon 3s ease-in-out infinite;
+    }
+    
+    @keyframes float-icon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    /* Stats counter animation */
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #10b981, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Fade in animations */
+    .fade-in {
+      animation: fadeIn 1s ease-out forwards;
+      opacity: 0;
+    }
+    
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .delay-1 { animation-delay: 0.2s; }
+    .delay-2 { animation-delay: 0.4s; }
+    .delay-3 { animation-delay: 0.6s; }
+    .delay-4 { animation-delay: 0.8s; }
+    
+    /* Lightning bolt animation */
+    .lightning {
+      animation: lightning-flash 2s ease-in-out infinite;
+    }
+    
+    @keyframes lightning-flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body class="min-h-screen gradient-bg text-slate-100 flex flex-col relative">
+  
+  <!-- Animated particles -->
+  <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+  <div class="particle" style="left: 20%; animation-delay: 3s;"></div>
+  <div class="particle" style="left: 30%; animation-delay: 6s;"></div>
+  <div class="particle" style="left: 40%; animation-delay: 9s;"></div>
+  <div class="particle" style="left: 50%; animation-delay: 12s;"></div>
+  <div class="particle" style="left: 60%; animation-delay: 2s;"></div>
+  <div class="particle" style="left: 70%; animation-delay: 5s;"></div>
+  <div class="particle" style="left: 80%; animation-delay: 8s;"></div>
+  <div class="particle" style="left: 90%; animation-delay: 11s;"></div>
+  
+  <!-- Navbar -->
+  <nav class="glass flex items-center justify-between px-6 py-4 sticky top-0 z-50 fade-in">
+    <h1 class="text-xl font-bold text-amber-400 lightning flex items-center gap-2">
+      <span class="text-2xl">⚡</span> Simulador de Consumo
+    </h1>
+    <div class="space-x-6 text-sm font-medium">
+      <a href="index.html" class="text-amber-400 font-semibold">🏠 Início</a>
+      <a href="calculadora.html" class="navlink">⚙️ Calculadora</a>
+      <a href="instrucoes.html" class="navlink">📘 Instruções</a>
+      <a href="dicas.html" class="navlink">📗 Dicas</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <main class="flex-1 flex flex-col items-center justify-center text-center p-6 relative z-10">
+    <div class="max-w-4xl fade-in delay-1">
+      
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-amber-400/30 mb-6">
+        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        <span class="text-sm font-medium text-slate-300">Ferramenta 100% Gratuita</span>
+      </div>
+      
+      <!-- Main Title -->
+      <h2 class="text-5xl md:text-7xl font-extrabold hero-title mb-6 leading-tight">
+        Descubra quanto você<br>gasta de energia
+      </h2>
+      
+      <p class="text-slate-300 text-lg md:text-xl mb-8 leading-relaxed max-w-2xl mx-auto">
+        Simule o consumo de todos os aparelhos da sua casa e <strong class="text-amber-400">economize até 30%</strong> 
+        na conta de luz com decisões inteligentes.
+      </p>
+
+      <!-- CTA Button -->
+      <a href="calculadora.html"
+         class="btn-hero glow inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 font-bold text-lg rounded-full shadow-2xl">
+         <span>🚀 Começar Simulação</span>
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+         </svg>
+      </a>
+
+      <div class="mt-6 text-slate-400 text-sm">
+        <p>✨ Sem cadastro • ✨ Sem instalação • ✨ Resultados instantâneos</p>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl w-full fade-in delay-2">
+      <div class="glass rounded-2xl p-6 text-center feature-card">
+        <div class="stat-number">30%</div>
+        <p class="text-slate-300 mt-2 font-medium">Economia Média Possível</p>
+      </div>
+      <div class="glass rounded-2xl p-6 text-center feature-card">
+        <div class="stat-number">5</div>
+        <p class="text-slate-300 mt-2 font-medium">Ambientes da Casa</p>
+      </div>
+      <div class="glass rounded-2xl p-6 text-center feature-card">
+        <div class="stat-number">∞</div>
+        <p class="text-slate-300 mt-2 font-medium">Aparelhos Ilimitados</p>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-5xl w-full fade-in delay-3">
+      
+      <div class="feature-card rounded-2xl p-6 text-left">
+        <div class="feature-icon mb-4">📊</div>
+        <h3 class="text-xl font-bold text-amber-400 mb-2">Visualização Clara</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Gráficos interativos mostram exatamente onde sua energia está sendo consumida.
+        </p>
+      </div>
+
+      <div class="feature-card rounded-2xl p-6 text-left">
+        <div class="feature-icon mb-4">💰</div>
+        <h3 class="text-xl font-bold text-amber-400 mb-2">Economia Real</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Calcule quanto cada aparelho custa por mês e identifique oportunidades de economia.
+        </p>
+      </div>
+
+      <div class="feature-card rounded-2xl p-6 text-left">
+        <div class="feature-icon mb-4">🎯</div>
+        <h3 class="text-xl font-bold text-amber-400 mb-2">Fácil de Usar</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Interface intuitiva com aparelhos pré-configurados. Comece a simular em segundos!
+        </p>
+      </div>
+
+    </div>
+
+    <!-- How it works -->
+    <div class="mt-16 max-w-3xl w-full fade-in delay-4">
+      <h3 class="text-3xl font-bold text-amber-400 mb-8">Como Funciona?</h3>
+      
+      <div class="space-y-4">
+        <div class="glass rounded-xl p-4 flex items-start gap-4 feature-card">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-400 text-slate-900 font-bold flex items-center justify-center">1</div>
+          <div class="text-left">
+            <h4 class="font-semibold text-lg text-slate-100 mb-1">Escolha o Cômodo</h4>
+            <p class="text-slate-400 text-sm">Selecione entre Sala, Quarto, Cozinha, Banheiro ou Lavanderia</p>
+          </div>
+        </div>
+
+        <div class="glass rounded-xl p-4 flex items-start gap-4 feature-card">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-400 text-slate-900 font-bold flex items-center justify-center">2</div>
+          <div class="text-left">
+            <h4 class="font-semibold text-lg text-slate-100 mb-1">Adicione Aparelhos</h4>
+            <p class="text-slate-400 text-sm">Use os presets ou adicione manualmente com potência e horas de uso</p>
+          </div>
+        </div>
+
+        <div class="glass rounded-xl p-4 flex items-start gap-4 feature-card">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-400 text-slate-900 font-bold flex items-center justify-center">3</div>
+          <div class="text-left">
+            <h4 class="font-semibold text-lg text-slate-100 mb-1">Veja os Resultados</h4>
+            <p class="text-slate-400 text-sm">Análise completa com gráficos, consumo em kWh e custo em reais</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-slate-400 text-sm glass border-t border-slate-700 relative z-10 fade-in delay-4">
+    <p class="mb-2">⚡ Desenvolvido por Eletromágicos — 2025</p>
+  </footer>
+
+</body>
+</html>

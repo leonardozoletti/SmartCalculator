@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dicas de Economia de Energia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); }
+    .navlink:hover { color: #facc15; }
+    .dica-card {
+      background: rgba(255,255,255,0.03);
+      border-left: 4px solid #10b981;
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dica-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+    .economia-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .categoria {
+      background: rgba(250, 204, 21, 0.1);
+      border-left: 3px solid #facc15;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+    }
+    .icon-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(250, 204, 21, 0.15);
+      border-radius: 10px;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+    }
+    .impacto-alto { border-left-color: #ef4444; }
+    .impacto-medio { border-left-color: #f59e0b; }
+    .impacto-baixo { border-left-color: #10b981; }
+    .stat-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+
+  <nav class="flex items-center justify-between px-6 py-4 glass border-b border-slate-700">
+    <h1 class="text-xl font-bold text-amber-400">⚡ Simulador de Consumo</h1>
+    <div class="space-x-6 text-sm">
+      <a href="index.html" class="navlink hover:underline">🏠 Início</a>
+      <a href="calculadora.html" class="navlink hover:underline">⚙️ Calculadora</a>
+      <a href="instrucoes.html" class="navlink hover:underline">📘 Instruções</a>
+      <a href="dicas.html" class="text-amber-400 font-semibold">📗 Dicas</a>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto p-8 space-y-8">
+    
+    <!-- Header -->
+    <section class="glass p-6 rounded-2xl shadow-xl text-center">
+      <h2 class="text-3xl font-extrabold mb-3 text-amber-400">💡 Guia Completo de Economia de Energia</h2>
+      <p class="text-slate-300 text-lg leading-relaxed max-w-3xl mx-auto">
+        Pequenas mudanças nos hábitos podem gerar <strong>grandes economias</strong> na conta de luz.
+        Confira nossas dicas práticas organizadas por categoria e impacto!
+      </p>
+    </section>
+
+    <!-- Estatísticas Rápidas -->
+    <section class="grid md:grid-cols-3 gap-4">
+      <div class="stat-box glass">
+        <div class="text-3xl font-bold text-green-400">30%</div>
+        <div class="text-sm text-slate-300 mt-1">Economia média possível</div>
+      </div>
+      <div class="stat-box glass">
+        <div class="text-3xl font-bold text-blue-400">R$ 200+</div>
+        <div class="text-sm text-slate-300 mt-1">Redução mensal na conta</div>
+      </div>
+      <div class="stat-box glass">
+        <div class="text-3xl font-bold text-amber-400">80%</div>
+        <div class="text-sm text-slate-300 mt-1">Economia com LED vs incandescente</div>
+      </div>
+    </section>
+
+    <!-- Categoria: Iluminação -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">💡</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Iluminação</h3>
+      </div>
+
+      <div class="dica-card impacto-alto">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Troque todas as lâmpadas por LED</strong>
+          <span class="economia-badge">ATÉ 80% 🔥</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Lâmpadas LED consomem até <strong>80% menos energia</strong> que as incandescentes e duram muito mais (até 25.000 horas). 
+          O investimento inicial se paga em poucos meses.
+        </p>
+        <div class="mt-2 text-xs text-slate-400">
+          💰 Exemplo: 10 lâmpadas LED economizam cerca de R$ 15-20/mês
+        </div>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Aproveite a luz natural</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Abra cortinas e persianas durante o dia. Pinte paredes com cores claras para refletir mais luz. 
+          Organize móveis para não bloquear janelas.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Desligue luzes ao sair do cômodo</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Parece óbvio, mas faz diferença! Instale sensores de presença em corredores e banheiros para automatizar.
+        </p>
+      </div>
+    </section>
+
+    <!-- Categoria: Ar-condicionado e Climatização -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">❄️</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Ar-condicionado e Climatização</h3>
+      </div>
+
+      <div class="dica-card impacto-alto">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Mantenha entre 23°C e 25°C</strong>
+          <span class="economia-badge">ATÉ 30% 🔥</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Cada grau a menos aumenta o consumo em <strong>6% a 8%</strong>. A temperatura de 23°C já é bem confortável 
+          e economiza muito comparado a 18°C ou 20°C.
+        </p>
+        <div class="mt-2 text-xs text-slate-400">
+          💰 Economia: R$ 50-100/mês dependendo do uso
+        </div>
+      </div>
+
+      <div class="dica-card impacto-alto">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Limpe os filtros mensalmente</strong>
+          <span class="economia-badge">ATÉ 15% 🔥</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Filtros sujos fazem o ar-condicionado trabalhar mais para resfriar o ambiente, aumentando o consumo. 
+          Limpe com água e sabão neutro mensalmente.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Use o modo "Eco" ou "Sleep"</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Esses modos ajustam automaticamente a temperatura e a velocidade do ventilador para economizar energia, 
+          especialmente útil durante a noite.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Escolha ventilador quando possível</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Um ventilador consome cerca de <strong>20x menos</strong> que um ar-condicionado. Use ventiladores 
+          em dias menos quentes ou combine com o ar-condicionado em temperatura mais alta.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Feche portas e janelas</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Mantenha o ambiente fechado para não perder o ar frio. Vede frestas e use cortinas blackout 
+          para bloquear o calor do sol.
+        </p>
+      </div>
+    </section>
+
+    <!-- Categoria: Geladeira e Freezer -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">🧊</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Geladeira e Freezer</h3>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Regule a temperatura corretamente</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Geladeira: <strong>3°C a 5°C</strong> | Freezer: <strong>-15°C a -18°C</strong>. 
+          Temperaturas mais baixas que o necessário desperdiçam energia.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Evite abrir a porta sem necessidade</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Cada vez que abre a porta, entra ar quente e a geladeira precisa trabalhar mais. 
+          Pense no que vai pegar antes de abrir e feche rápido.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Não guarde alimentos quentes</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Espere os alimentos esfriarem antes de colocar na geladeira. Alimentos quentes fazem o motor 
+          trabalhar mais para manter a temperatura.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Limpe as serpentinas traseiras</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Poeira acumulada atrás da geladeira dificulta a dissipação de calor. Limpe a cada 3-6 meses 
+          para manter a eficiência.
+        </p>
+      </div>
+    </section>
+
+    <!-- Categoria: Chuveiro Elétrico -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">🚿</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Chuveiro Elétrico</h3>
+      </div>
+
+      <div class="dica-card impacto-alto">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Reduza o tempo de banho</strong>
+          <span class="economia-badge">ATÉ 40% 🔥</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          O chuveiro elétrico é um dos maiores vilões da conta de luz. Reduzir de 15 para 8 minutos 
+          economiza <strong>quase 50%</strong> do consumo. Use um timer ou cronômetro!
+        </p>
+        <div class="mt-2 text-xs text-slate-400">
+          💰 Economia: R$ 30-60/mês por pessoa
+        </div>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Use a posição "verão" sempre que possível</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          A posição "inverno" consome até <strong>30% mais</strong> que a "verão". Em dias quentes, 
+          use água morna ou até fria.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Mantenha o chuveiro limpo</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Furos entupidos reduzem a vazão de água, fazendo você demorar mais no banho. 
+          Limpe mensalmente com vinagre ou produto anti-calcário.
+        </p>
+      </div>
+    </section>
+
+    <!-- Categoria: Lavanderia -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">👕</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Lavanderia</h3>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Lave com carga completa</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Acumule roupas e lave sempre com a máquina cheia. Lavar meia carga desperdiça energia 
+          e água proporcionalmente.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Evite a secadora</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Secadoras consomem <strong>muita energia</strong> (2000W+). Sempre que possível, 
+          seque roupas no varal ou ao sol. É grátis e ecológico!
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Passe várias peças de uma vez</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          O ferro consome bastante (1000-1500W). Acumule roupas e passe tudo de uma vez. 
+          Desligue alguns minutos antes e use o calor residual.
+        </p>
+      </div>
+    </section>
+
+    <!-- Categoria: Eletrônicos -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">📺</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Eletrônicos e Entretenimento</h3>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Tire da tomada quando não usar</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          TVs, videogames, computadores e carregadores consomem energia mesmo em stand-by (modo de espera). 
+          Use filtros de linha com interruptor para desligar vários aparelhos de uma vez.
+        </p>
+        <div class="mt-2 text-xs text-slate-400">
+          💰 Stand-by pode representar 10-15% da conta de luz
+        </div>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Ajuste o brilho da TV</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          TVs em brilho máximo consomem até 30% mais energia. Configure para um nível confortável 
+          (geralmente 50-70% é suficiente).
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Use modo de economia de energia</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Computadores, notebooks e TVs modernas têm modos "Eco" que reduzem o consumo. 
+          Configure hibernação/suspensão após alguns minutos de inatividade.
+        </p>
+      </div>
+    </section>
+
+    <!-- Categoria: Cozinha -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">🍳</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Cozinha</h3>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Use panela de pressão</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Cozinha <strong>3x mais rápido</strong> que panelas comuns, economizando gás ou energia elétrica. 
+          Ótima para feijão, carnes e legumes duros.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Tampe as panelas ao cozinhar</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Manter a tampa reduz o tempo de cozimento em até 30%. O calor fica concentrado e 
+          você gasta menos energia ou gás.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Descongele alimentos na geladeira</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Evite usar o micro-ondas para descongelar. Planeje com antecedência e descongele na geladeira 
+          ou em temperatura ambiente.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-baixo">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Use chaleira elétrica para água quente</strong>
+          <span class="economia-badge">BAIXO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Chaleiras elétricas são mais eficientes que ferver água no fogão ou micro-ondas. 
+          Ferva apenas a quantidade necessária.
+        </p>
+      </div>
+    </section>
+
+    <!-- Dicas Gerais -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center mb-4">
+        <span class="icon-badge">🌟</span>
+        <h3 class="text-2xl font-semibold text-amber-400">Dicas Gerais e Investimentos</h3>
+      </div>
+
+      <div class="dica-card impacto-alto">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Invista em equipamentos eficientes</strong>
+          <span class="economia-badge">LONGO PRAZO 🔥</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Ao comprar novos aparelhos, procure pelo <strong>selo Procel A</strong> (mais eficiente). 
+          Geladeiras, ar-condicionados e máquinas de lavar com selo A consomem até 50% menos.
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Monitore seu consumo</strong>
+          <span class="economia-badge">MÉDIO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Use nossa calculadora para identificar os "vilões" da sua conta. Acompanhe mensalmente 
+          e estabeleça metas de redução. O que é medido, é gerenciado!
+        </p>
+      </div>
+
+      <div class="dica-card impacto-medio">
+        <div class="flex items-start justify-between mb-2">
+          <strong class="text-lg text-slate-100">Considere energia solar</strong>
+          <span class="economia-badge">LONGO PRAZO</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Painéis solares residenciais podem reduzir sua conta em <strong>até 95%</strong>. 
+          O investimento se paga em 4-7 anos e os painéis duram mais de 25 anos.
+        </p>
+      </div>
+    </section>
+
+    <!-- Checklist de Ações Rápidas -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">✅ Checklist: Comece Hoje Mesmo!</h3>
+      <p class="text-slate-300 mb-4">Ações simples que você pode fazer agora para começar a economizar:</p>
+      
+      <div class="grid md:grid-cols-2 gap-3">
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Trocar 5 lâmpadas por LED</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Regular ar-condicionado para 24°C</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Limpar filtro do ar-condicionado</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Reduzir banho para 8 minutos</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Tirar aparelhos da tomada à noite</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Regular temperatura da geladeira</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Usar filtro de linha com interruptor</span>
+        </label>
+        
+        <label class="flex items-start gap-3 p-3 bg-slate-900/30 rounded-lg cursor-pointer hover:bg-slate-900/50 transition">
+          <input type="checkbox" class="mt-1 w-4 h-4 accent-green-500">
+          <span class="text-sm text-slate-300">Fazer levantamento na calculadora</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="glass p-8 rounded-2xl shadow-xl text-center">
+      <h3 class="text-2xl font-bold text-amber-400 mb-3">

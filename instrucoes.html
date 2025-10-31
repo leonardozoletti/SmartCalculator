@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instruções – Simulador de Consumo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); }
+    .navlink:hover { color: #facc15; }
+    .destaque {
+      background: rgba(250, 204, 21, 0.1);
+      border-left: 3px solid #facc15;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+    }
+    .passo {
+      background: rgba(255,255,255,0.03);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #facc15;
+    }
+    .passo-numero {
+      display: inline-block;
+      background: #facc15;
+      color: #0f172a;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 28px;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    .botao-exemplo {
+      display: inline-block;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .btn-indigo {
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .btn-rose {
+      background: rgba(244, 63, 94, 0.2);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+    .btn-amber {
+      background: rgba(251, 191, 36, 0.3);
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+    .btn-emerald {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .btn-slate {
+      background: rgba(100, 116, 139, 0.2);
+      color: #cbd5e1;
+      border-color: rgba(100, 116, 139, 0.3);
+    }
+    .campo-exemplo {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,216,102,0.3);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.875rem;
+    }
+    details {
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
+    details:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(250, 204, 21, 0.3);
+    }
+    details[open] {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(250, 204, 21, 0.4);
+    }
+    summary {
+      cursor: pointer;
+      padding: 1rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      transition: all 0.3s ease;
+    }
+    summary:hover {
+      background: rgba(250, 204, 21, 0.1);
+      color: #fbbf24;
+    }
+    details[open] summary {
+      color: #facc15;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 0.75rem;
+    }
+    summary::marker {
+      content: '';
+    }
+    summary::after {
+      content: ' ▼';
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+      color: #facc15;
+    }
+    details[open] summary::after {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+  
+  <nav class="flex items-center justify-between px-6 py-4 glass border-b border-slate-700">
+    <h1 class="text-xl font-bold text-amber-400">⚡ Simulador de Consumo</h1>
+    <div class="space-x-6 text-sm">
+      <a href="index.html" class="navlink hover:underline">🏠 Início</a>
+      <a href="calculadora.html" class="navlink hover:underline">⚙️ Calculadora</a>
+      <a href="instrucoes.html" class="text-amber-400 font-semibold">📘 Instruções</a>
+      <a href="dicas.html" class="navlink hover:underline">💡 Dicas</a>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto p-8 space-y-8">
+    
+    <!-- Introdução -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h2 class="text-3xl font-semibold mb-3 text-amber-400">📖 Guia Completo de Uso da Calculadora</h2>
+      <p class="text-slate-300 leading-relaxed text-lg">
+        Bem-vindo ao manual completo do <strong>Simulador de Consumo de Energia</strong>! 
+        Este guia vai te mostrar <strong>passo a passo</strong> como usar todas as funcionalidades 
+        da calculadora, com exemplos práticos e referências diretas aos botões e campos da interface.
+      </p>
+    </section>
+
+    <!-- Passo 1: Selecionar Cômodo -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">🏠 Passo 1: Selecione o Cômodo</h3>
+      
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          
+          Na parte superior da <strong>Calculadora</strong>, você verá 5 botões de cômodos disponíveis:
+        </p>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <span class="botao-exemplo btn-slate">🛋️ Sala</span>
+          <span class="botao-exemplo btn-slate">🛏️ Quarto</span>
+          <span class="botao-exemplo btn-slate">🍳 Cozinha</span>
+          <span class="botao-exemplo btn-slate">🚿 Banheiro</span>
+          <span class="botao-exemplo btn-slate">👕 Lavanderia</span>
+        </div>
+        <p class="text-slate-300 text-sm">
+          ✅ <strong>Clique em um deles</strong> para visualizar os aparelhos pré-definidos daquele ambiente. 
+          O botão selecionado ficará destacado em <span class="text-amber-400 font-bold">amarelo</span>.
+        </p>
+      </div>
+
+      <div class="destaque">
+        <strong>💡 Dica:</strong> Cada cômodo tem aparelhos diferentes já configurados. Você pode trocar 
+        de cômodo a qualquer momento - seus dados serão salvos automaticamente no navegador!
+      </div>
+    </section>
+
+    <!-- Passo 2: Importar ou Adicionar -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">➕ Passo 2: Adicione Aparelhos</h3>
+      
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          No painel da esquerda (seção <strong>"📦 Sala"</strong> ou outro cômodo), você verá a lista de 
+          <strong>Aparelhos pré-definidos</strong>. Exemplo para a Sala:
+        </p>
+        <ul class="list-disc list-inside text-slate-300 space-y-1 ml-8 mb-3 text-sm">
+          <li>TV LED 55" – 120W</li>
+          <li>Ar-condicionado 12k BTU – 1000W</li>
+          <li>Ventilador – 60W</li>
+          <li>Soundbar – 40W</li>
+          <li>Lâmpada LED 12W – 12W</li>
+        </ul>
+        <p class="text-slate-300 mb-3">
+          ✅ Clique no botão <span class="botao-exemplo btn-slate">➕ Importar</span> ao lado de cada aparelho 
+          para adicioná-lo à <strong>Tabela de Aparelhos</strong>.
+        </p>
+      </div>
+
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          Se quiser adicionar um aparelho que não está na lista, clique em:
+        </p>
+        <div class="mb-3">
+          <span class="botao-exemplo btn-indigo">➕ Adicionar manual</span>
+        </div>
+        <p class="text-slate-300 text-sm">
+          Isso criará uma nova linha vazia na tabela onde você pode digitar o nome e os dados do aparelho.
+        </p>
+      </div>
+
+      <div class="destaque">
+        <strong>💡 Exemplo prático:</strong> Quer adicionar um carregador de notebook? Clique em 
+        <span class="botao-exemplo btn-indigo">➕ Adicionar manual</span> e preencha:<br>
+        <span class="text-sm mt-2 block">
+          Nome = "Carregador notebook" | Potência = 65W | Quantidade = 1 | Horas/dia = 4
+        </span>
+      </div>
+    </section>
+
+    <!-- Passo 3: Preencher Tabela -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">📝 Passo 3: Preencha os Dados na Tabela</h3>
+      
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          Na seção <strong>"📋 Tabela de Aparelhos"</strong>, você verá as seguintes colunas editáveis:
+        </p>
+        <div class="space-y-3 ml-8">
+          <div>
+            <strong class="text-amber-400">🏷️ Nome:</strong>
+            <span class="text-slate-300"> Identifique o aparelho (ex: "TV da sala", "Geladeira")</span>
+          </div>
+          <div>
+            <strong class="text-amber-400">⚡ Potência (W):</strong>
+            <span class="text-slate-300"> Quanto o aparelho consome em Watts. Você encontra essa informação:</span>
+            <ul class="list-disc list-inside text-slate-300 text-sm ml-6 mt-1">
+              <li>Na etiqueta atrás/embaixo do aparelho</li>
+              <li>No manual do produto</li>
+              <li>Na nota fiscal ou caixa</li>
+              <li>Pesquisando no Google: "modelo + consumo watts"</li>
+            </ul>
+          </div>
+          <div>
+            <strong class="text-amber-400">#️⃣ Quantidade:</strong>
+            <span class="text-slate-300"> Quantos aparelhos iguais você tem (ex: 4 lâmpadas no mesmo cômodo)</span>
+          </div>
+          <div>
+            <strong class="text-amber-400">🕗 Horas/dia:</strong>
+            <span class="text-slate-300"> Quantas horas por dia o aparelho fica ligado (média diária)</span>
+          </div>
+          <div>
+            <strong class="text-amber-400">⏳ Minutos/dia:</strong>
+            <span class="text-slate-300"> Para aparelhos de uso rápido (ex: micro-ondas = 12 minutos, secador = 3 minutos)</span>
+          </div>
+          <div>
+            <strong class="text-green-400">💚 kWh/mês:</strong>
+            <span class="text-slate-300"> <strong>Calculado automaticamente!</strong> Você não precisa preencher.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="destaque mt-4">
+        <strong>💡 Exemplo completo:</strong><br>
+        <div class="flex flex-wrap gap-2 mt-2 items-center text-sm">
+          <span class="campo-exemplo">TV LED 55"</span>
+          <span class="campo-exemplo">120 W</span>
+          <span class="campo-exemplo">1</span>
+          <span class="campo-exemplo">4 h/dia</span>
+          <span class="campo-exemplo">0 min</span>
+          <span class="text-amber-400">→ 14,40 kWh/mês</span>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+        <strong class="text-blue-400">📌 Importante:</strong>
+        <p class="text-slate-300 text-sm mt-2">
+          A coluna <strong>💚 kWh/mês</strong> é calculada automaticamente conforme você digita. 
+          Fórmula: <code class="bg-slate-900/50 px-2 py-1 rounded text-xs">(Potência × (Horas + Minutos/60) × 30 dias × Quantidade) ÷ 1000</code>
+        </p>
+      </div>
+    </section>
+
+    <!-- Passo 4: Calcular e Visualizar -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">📊 Passo 4: Calcule e Visualize os Resultados</h3>
+      
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          Após preencher os dados, clique no botão:
+        </p>
+        <div class="mb-3">
+          <span class="botao-exemplo btn-amber">🧮 Calcular</span>
+        </div>
+        <p class="text-slate-300 text-sm">
+          Isso atualizará todos os cálculos, o resumo do ambiente e os gráficos da página.
+        </p>
+      </div>
+
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          No painel <strong>"📊 Resumo do ambiente"</strong> (lado direito superior), você verá:
+        </p>
+        <div class="space-y-2 ml-8 text-slate-300 text-sm">
+          <div class="flex justify-between items-center bg-slate-900/30 p-2 rounded">
+            <span>⚡ Consumo total:</span>
+            <strong class="text-green-400">145,80 kWh</strong>
+          </div>
+          <div class="flex justify-between items-center bg-slate-900/30 p-2 rounded">
+            <span>💵 Custo estimado:</span>
+            <strong class="text-amber-400">R$ 141,43</strong>
+          </div>
+          <div class="flex justify-between items-center bg-slate-900/30 p-2 rounded">
+            <span>🔌 Aparelhos:</span>
+            <strong class="text-blue-400">5</strong>
+          </div>
+          <div class="flex justify-between items-center bg-slate-900/30 p-2 rounded">
+            <span>🕐 Horas médias/dia:</span>
+            <strong class="text-purple-400">3.8</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="destaque mt-4">
+        <strong>💡 Ajuste a tarifa:</strong> No canto superior direito, você pode alterar o valor 
+        <span class="campo-exemplo">💰 Tarifa (R$/kWh)</span> conforme a taxa da sua distribuidora de energia. 
+        O padrão é <strong>R$ 0,970/kWh</strong> (média Brasil 2025).
+      </div>
+    </section>
+
+    <!-- Passo 5: Gráficos -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">📈 Passo 5: Analise os Gráficos</h3>
+      
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          Role a página até a seção de gráficos. Você encontrará <strong>dois gráficos lado a lado</strong>:
+        </p>
+        <ul class="list-disc list-inside text-slate-300 space-y-2 ml-8 text-sm">
+          <li><strong>🥧 Gráfico de Pizza:</strong> Mostra a proporção (%) de consumo de cada aparelho em relação ao total</li>
+          <li><strong>📊 Gráfico de Barras:</strong> Compara o consumo entre os aparelhos em valores absolutos</li>
+        </ul>
+      </div>
+
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          Clique no botão <span class="botao-exemplo btn-emerald">📊 Modo: kWh</span> 
+          para alternar entre duas visualizações:
+        </p>
+        <ul class="list-disc list-inside text-slate-300 space-y-1 ml-8 text-sm">
+          <li><strong>📊 Modo: kWh</strong> → Mostra o consumo em quilowatt-hora (energia consumida)</li>
+          <li><strong>💰 Modo: R$</strong> → Mostra o custo em reais (quanto você paga na conta de luz)</li>
+        </ul>
+        <p class="text-slate-300 text-sm mt-2 ml-8">
+          O botão muda de nome conforme o modo ativo. Os gráficos se atualizam automaticamente.
+        </p>
+      </div>
+
+      <div class="destaque">
+        <strong>💡 Insight útil:</strong> Os gráficos te ajudam a identificar rapidamente qual aparelho "come" 
+        mais energia. Geralmente, <strong>ar-condicionado, chuveiro elétrico e geladeira</strong> são os campeões!
+      </div>
+    </section>
+
+    <!-- Passo 6: Relatório Geral -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">📊 Passo 6: Acesse o Relatório Geral</h3>
+      
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          No canto superior direito do menu de navegação, clique em:
+        </p>
+        <div class="mb-3">
+          <span class="botao-exemplo btn-indigo">📊 Ver Relatório Geral</span>
+        </div>
+        <p class="text-slate-300 text-sm">
+          Isso abrirá uma <strong>visão consolidada</strong> de TODOS os cômodos da casa, com:
+        </p>
+        <ul class="list-disc list-inside text-slate-300 space-y-1 ml-8 mt-2 text-sm">
+          <li><strong>Consumo total da casa</strong> (soma de todos os cômodos)</li>
+          <li><strong>Custo total mensal</strong></li>
+          <li><strong>Tabela comparativa</strong> entre cômodos</li>
+          <li><strong>Gráficos de distribuição</strong> (pizza e barras)</li>
+          <li><strong>Top 10 aparelhos</strong> com maior consumo</li>
+        </ul>
+      </div>
+
+      <div class="passo">
+        <p class="text-slate-300 leading-relaxed mb-3">
+          Para voltar à calculadora, clique em:
+        </p>
+        <div class="mb-3">
+          <span class="botao-exemplo btn-slate">⬅️ Voltar</span>
+        </div>
+      </div>
+
+      <div class="destaque">
+        <strong>💡 Dica estratégica:</strong> Use o Relatório Geral para identificar qual cômodo consome mais 
+        e priorizar ações de economia onde o impacto será maior!
+      </div>
+    </section>
+
+    <!-- Passo 7: Funções Extras -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">🔧 Passo 7: Funções Extras e Botões Úteis</h3>
+      
+      <div class="space-y-3">
+        <details>
+          <summary class="font-semibold text-slate-200">
+            🗑️ Remover aparelho individual
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Cada linha da tabela tem um botão <span class="botao-exemplo btn-rose">🗑️ Remover</span>. 
+              Clique nele para excluir apenas aquele aparelho da lista.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-slate-200">
+            🧹 Limpar todos os aparelhos do cômodo
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              O botão <span class="botao-exemplo btn-rose">🗑️ Limpar</span> remove TODOS os aparelhos do cômodo atual. 
+              <strong>Atenção:</strong> O sistema pedirá confirmação antes de executar.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-slate-200">
+            💾 Salvar dados manualmente
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Clique em <span class="botao-exemplo btn-slate">💾 Salvar</span> para forçar o salvamento imediato 
+              dos dados no navegador. Os dados são salvos automaticamente ao trocar de cômodo, mas esse botão 
+              garante que tudo está armazenado.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-slate-200">
+            ⏱️ Zerar todas as horas
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              O botão <span class="botao-exemplo btn-slate">⏱️ Zerar horas</span> coloca 0 em todas as colunas 
+              "Horas/dia" e "Minutos/dia" da tabela atual. Útil para começar um novo teste sem apagar os aparelhos.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-slate-200">
+            📥 Exportar CSV (planilha)
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm mb-2">
+              Clique em <span class="botao-exemplo btn-slate">📥 Exportar CSV</span> para baixar uma planilha 
+              com todos os dados do cômodo atual. Você pode abrir no Excel, Google Sheets ou LibreOffice Calc.
+            </p>
+            <p class="text-slate-400 text-xs">
+              📄 O arquivo CSV contém: nome, potência, quantidade, horas, minutos, kWh e custo de cada aparelho.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-slate-200">
+            📄 Gerar PDF Executivo
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm mb-2">
+              O botão <span class="botao-exemplo btn-emerald">📄 Gerar PDF</span> (no topo da página) ou 
+              <span class="botao-exemplo btn-emerald">📄 Gerar PDF Executivo</span> (no Relatório Geral) 
+              cria um relatório profissional em PDF com:
+            </p>
+            <ul class="list-disc list-inside text-slate-300 text-xs ml-4 space-y-1">
+              <li>Capa executiva</li>
+              <li>Sumário com indicadores principais (consumo, custo, aparelhos)</li>
+              <li>Análise detalhada por cômodo com gráficos</li>
+              <li>Top 10 aparelhos com maior consumo</li>
+              <li>Recomendações personalizadas de economia</li>
+              <li>Projeção anual de gastos</li>
+            </ul>
+            <p class="text-slate-400 text-xs mt-2">
+              ⭐ <strong>Novo recurso!</strong> Ideal para apresentar análises ou guardar histórico.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-slate-200">
+            📥 Exportar CSV Detalhado (Relatório Geral)
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm mb-2">
+              No Relatório Geral, o botão <span class="botao-exemplo btn-amber">📥 Exportar CSV Detalhado</span> 
+              gera uma planilha completa com:
+            </p>
+            <ul class="list-disc list-inside text-slate-300 text-xs ml-4 space-y-1">
+              <li>Resumo consolidado da casa toda</li>
+              <li>Comparativo entre cômodos</li>
+              <li>Detalhamento aparelho por aparelho de cada cômodo</li>
+              <li>Totais e subtotais</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Dicas Finais -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">🎯 Dicas Finais para Melhor Uso</h3>
+      
+      <div class="space-y-3 text-slate-300">
+        <div class="p-3 bg-green-900/20 border border-green-500/30 rounded-lg">
+          <strong class="text-green-400">✅ Seja realista nas estimativas:</strong> 
+          <span class="text-sm">Estime o tempo de uso real dos aparelhos. É melhor errar um pouco 
+          para menos do que exagerar. Anote durante uma semana e tire a média!</span>
+        </div>
+
+        <div class="p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+          <strong class="text-blue-400">✅ Consulte manuais e etiquetas:</strong> 
+          <span class="text-sm">Se não souber a potência exata, procure no manual, etiqueta atrás do aparelho 
+          ou use valores médios pesquisando no Google. Ex: "TV LED 55 polegadas consumo watts"</span>
+        </div>
+
+        <div class="p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+          <strong class="text-purple-400">✅ Cadastre todos os cômodos:</strong> 
+          <span class="text-sm">Preencha dados de todos os ambientes da sua casa para ter uma visão completa. 
+          Depois acesse o <strong>Relatório Geral</strong> para ver o panorama completo!</span>
+        </div>
+
+        <div class="p-3 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+          <strong class="text-amber-400">✅ Use os gráficos como ferramenta de decisão:</strong> 
+          <span class="text-sm">Eles são ótimos para tomar decisões. Se um aparelho está "comendo" muito, 
+          talvez seja hora de trocar por um modelo mais eficiente ou reduzir o tempo de uso!</span>
+        </div>
+
+        <div class="p-3 bg-rose-900/20 border border-rose-500/30 rounded-lg">
+          <strong class="text-rose-400">✅ Gere o PDF para acompanhamento:</strong> 
+          <span class="text-sm">Crie um PDF mensal para comparar seu consumo ao longo do tempo e medir 
+          o impacto das mudanças que você fez!</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Rápido -->
+    <section class="glass p-6 rounded-2xl shadow-xl">
+      <h3 class="text-2xl font-semibold text-amber-400 mb-4">❓ Perguntas Frequentes</h3>
+      
+      <div class="space-y-3">
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            Como faço para calcular aparelhos que uso poucos minutos por dia?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Use a coluna <strong>⏳ Minutos/dia</strong>! Por exemplo: micro-ondas usado 12 minutos = 
+              coloque 0 horas e 12 minutos. O sistema converte automaticamente para o cálculo.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            Onde encontro a potência dos meus aparelhos?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Procure em: etiqueta atrás/embaixo do aparelho, manual, nota fiscal ou pesquise no Google 
+              pelo modelo + "consumo watts". Exemplo: "geladeira frost free 300L consumo watts".
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            Meus dados serão perdidos se fechar o navegador?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Não! Os dados ficam salvos no navegador (localStorage). Apenas se você limpar o cache 
+              do navegador é que eles serão apagados. Por segurança, faça backup gerando um CSV periodicamente.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            Como altero a tarifa de energia?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              No canto superior direito da calculadora, edite o campo <strong>💰 Tarifa (R$/kWh)</strong>. 
+              Consulte sua conta de luz para saber o valor exato da sua distribuidora. O padrão é R$ 0,970.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            O que significa "kWh" e como é calculado?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              kWh (quilowatt-hora) é a unidade de energia elétrica. O cálculo é: 
+              <strong>(Potência em Watts × Horas de uso × 30 dias × Quantidade) ÷ 1000</strong>. 
+              Por exemplo: uma TV de 100W ligada 5h/dia consome 15 kWh/mês.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            Posso usar a calculadora no celular?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Sim! A interface é responsiva e funciona perfeitamente em smartphones e tablets. 
+              Todos os recursos estão disponíveis na versão mobile.
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            Como faço para comparar meu consumo antes e depois de mudanças?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Gere um PDF ou CSV antes de fazer mudanças (ex: trocar lâmpadas por LED). 
+              Depois, atualize os dados e gere outro relatório. Compare os totais para ver quanto economizou!
+            </p>
+          </div>
+        </details>
+
+        <details>
+          <summary class="font-semibold text-amber-300 hover:text-amber-400">
+            O que fazer se a tabela ficar muito grande?
+          </summary>
+          <div class="p-4">
+            <p class="text-slate-300 text-sm">
+              Use a função <span class="botao-exemplo btn-slate">📥 Exportar CSV</span> para ter uma versão 
+              externa dos dados. Você também pode usar o botão <span class="botao-exemplo btn-rose">🗑️ Limpar</span> 
+              para remover aparelhos que não são mais relevantes.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer class="text-center text-slate-400 text-sm mt-10 pb-8">
+      ⚡ Desenvolvido por Eletromagnéticos – 2025
+    </footer>
+  </main>
+</body>
+</html>
